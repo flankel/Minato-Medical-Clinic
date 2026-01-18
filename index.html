@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minato Medical Clinic | 港区メディカルクリニック</title>
+    <meta name="description" content="南青山・表参道の内科・皮膚科・アレルギー科。平日20時まで診療。WEB予約可能。">
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Noto Sans JP', sans-serif; }
+        .font-eng { font-family: 'Lato', sans-serif; }
+
+        /* スクロールアニメーションの初期状態（隠す） */
+        .fade-in-up {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s ease-out, transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        /* 表示状態 */
+        .fade-in-up.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* 診療時間割の〇×調整 */
+        .schedule-table th, .schedule-table td {
+            text-align: center;
+            padding: 1rem 0.5rem;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        .schedule-table th { background-color: #f0f9ff; color: #0f766e; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-700 antialiased">
+
+    <!-- ヘッダー -->
+    <header class="fixed w-full top-0 z-50 bg-white/95 backdrop-blur shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 md:px-6 h-20 flex justify-between items-center">
+            <!-- ロゴ -->
+            <a href="#" class="flex items-center gap-2 group">
+                <div class="w-8 h-8 bg-teal-500 rounded-full flex items-center justify-center text-white font-bold group-hover:bg-teal-600 transition">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"></path></svg>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold text-slate-800 tracking-tight">Minato Medical</h1>
+                    <p class="text-[10px] text-slate-500 font-eng leading-none">Minami-Aoyama, Tokyo</p>
+                </div>
+            </a>
+
+            <!-- ナビゲーション（PC） -->
+            <nav class="hidden md:flex items-center space-x-8 text-sm font-medium">
+                <a href="#about" class="hover:text-teal-600 transition">当院について</a>
+                <a href="#menu" class="hover:text-teal-600 transition">診療内容</a>
+                <a href="#schedule" class="hover:text-teal-600 transition">診療時間</a>
+                <a href="#access" class="hover:text-teal-600 transition">アクセス</a>
+            </nav>
+
+            <!-- 予約ボタン（PC） -->
+            <div class="hidden md:block">
+                <a href="#" class="bg-teal-600 text-white px-6 py-2.5 rounded-full font-bold shadow-md hover:bg-teal-700 hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 flex items-center gap-2">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                    WEB予約
+                </a>
+            </div>
+
+            <!-- ハンバーガーメニュー（スマホ） -->
+            <button id="menu-btn" class="md:hidden text-slate-600 hover:text-teal-600 p-2">
+                <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- モバイルメニュー（スライドダウン） -->
+    <div id="mobile-menu" class="fixed inset-0 bg-white z-40 transform translate-y-full transition-transform duration-300 md:hidden flex flex-col pt-24 px-6 space-y-6">
+        <button id="menu-close" class="absolute top-6 right-6 text-slate-500">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+        </button>
+        <a href="#about" class="text-xl font-bold border-b border-gray-100 pb-2 mobile-link">当院について</a>
+        <a href="#menu" class="text-xl font-bold border-b border-gray-100 pb-2 mobile-link">診療内容</a>
+        <a href="#schedule" class="text-xl font-bold border-b border-gray-100 pb-2 mobile-link">診療時間</a>
+        <a href="#access" class="text-xl font-bold border-b border-gray-100 pb-2 mobile-link">アクセス</a>
+        <a href="#" class="bg-teal-600 text-white py-4 rounded-lg font-bold text-center shadow-lg mobile-link">24時間 WEB予約</a>
+    </div>
+
+    <!-- ヒーローセクション -->
+    <section class="relative pt-28 pb-20 md:pt-40 md:pb-32 bg-gradient-to-br from-teal-50 to-white overflow-hidden">
+        <!-- 背景装飾円 -->
+        <div class="absolute top-0 right-0 w-2/3 h-full bg-teal-100/50 rounded-bl-[100px] -z-10"></div>
+
+        <div class="max-w-7xl mx-auto px-6 grid md:grid-cols-2 gap-12 items-center">
+            <!-- テキストエリア -->
+            <div class="fade-in-up">
+                <div class="inline-flex items-center gap-2 bg-white px-3 py-1 rounded-full shadow-sm text-teal-600 text-sm font-bold mb-6 border border-teal-100">
+                    <span class="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
+                    通常通り診療しております
+                </div>
+                <h2 class="text-4xl md:text-5xl font-bold text-slate-900 leading-tight mb-6">
+                    あなたのかかりつけ医として、<br>
+                    <span class="text-teal-600">もっと身近な安心</span>を。
+                </h2>
+                <p class="text-slate-600 mb-8 leading-relaxed">
+                    表参道駅から徒歩3分。内科・皮膚科・アレルギー科。<br>
+                    忙しいあなたのライフスタイルに合わせ、平日夜20時まで診療しています。
+                </p>
+                <div class="flex flex-col sm:flex-row gap-4">
+                    <a href="#" class="bg-teal-600 text-white px-8 py-4 rounded-lg font-bold shadow-lg hover:bg-teal-700 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 text-center">
+                        今すぐWEB予約する
+                    </a>
+                    <a href="tel:03-1234-5678" class="bg-white text-teal-700 border-2 border-teal-600 px-8 py-4 rounded-lg font-bold hover:bg-teal-50 transition duration-300 flex items-center justify-center gap-2">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"></path></svg>
+                        03-1234-5678
+                    </a>
+                </div>
+            </div>
+            <!-- ヒーロー画像 -->
+            <div class="relative fade-in-up" style="transition-delay: 200ms;">
+                <img src="https://images.unsplash.com/photo-1666214280557-f1b5022eb634?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Clinic Interior" class="rounded-3xl shadow-2xl relative z-10 w-full object-cover aspect-[4/3]">
+                <!-- 装飾ドット -->
+                <div class="absolute -bottom-6 -left-6 w-24 h-24 bg-[url('https://www.transparenttextures.com/patterns/dots-spaced.png')] opacity-30 z-0"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- お知らせ (News Ticker風) -->
+    <div class="bg-teal-900 text-white py-3 overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6 flex items-center">
+            <span class="bg-teal-700 text-xs px-2 py-1 rounded mr-4 font-bold whitespace-nowrap">NEWS</span>
+            <p class="text-sm truncate">
+                <span class="mr-6">2024.10.15 インフルエンザ予防接種の予約受付を開始しました。</span>
+                <span class="mr-6">2024.09.01 オンライン診療アプリを導入しました。</span>
+            </p>
+        </div>
+    </div>
+
+    <!-- 診療内容 (Card Hover Animation) -->
+    <section id="menu" class="py-24 bg-slate-50">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="text-center mb-16 fade-in-up">
+                <h3 class="text-3xl font-bold text-slate-800 mb-4">Medical Menu</h3>
+                <p class="text-teal-600 font-bold">診療内容</p>
+            </div>
+
+            <div class="grid md:grid-cols-3 gap-8">
+                <!-- 一般内科 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 fade-in-up group">
+                    <div class="w-16 h-16 bg-blue-50 rounded-2xl flex items-center justify-center text-blue-500 mb-6 group-hover:bg-blue-500 group-hover:text-white transition">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-slate-800">一般内科</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">風邪、発熱、頭痛、腹痛などの急性症状から、高血圧や糖尿病などの生活習慣病まで幅広く診療します。</p>
+                </div>
+                <!-- 皮膚科・アレルギー科 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 fade-in-up group" style="transition-delay: 100ms;">
+                    <div class="w-16 h-16 bg-teal-50 rounded-2xl flex items-center justify-center text-teal-500 mb-6 group-hover:bg-teal-500 group-hover:text-white transition">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.618 5.984A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016zM12 9v2m0 4h.01"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-slate-800">皮膚科・アレルギー科</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">湿疹、ニキビ、花粉症など。原因検査を行い、内服・外用だけでなくライフスタイルの改善提案も行います。</p>
+                </div>
+                <!-- 予防医療・健診 -->
+                <div class="bg-white p-8 rounded-2xl shadow-sm hover:shadow-xl hover:-translate-y-2 transition-all duration-300 fade-in-up group" style="transition-delay: 200ms;">
+                    <div class="w-16 h-16 bg-orange-50 rounded-2xl flex items-center justify-center text-orange-500 mb-6 group-hover:bg-orange-500 group-hover:text-white transition">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <h4 class="text-xl font-bold mb-4 text-slate-800">予防接種・健康診断</h4>
+                    <p class="text-slate-600 text-sm leading-relaxed">インフルエンザ等の各種ワクチン接種、定期健康診断、企業健診など。病気になる前の予防をサポートします。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 特徴・院長紹介 -->
+    <section id="about" class="py-24 bg-white overflow-hidden">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="flex flex-col lg:flex-row items-center gap-16">
+                <!-- 画像 -->
+                <div class="lg:w-1/2 fade-in-up">
+                    <div class="relative">
+                        <img src="https://images.unsplash.com/photo-1559839734-2b71ea197ec2?ixlib=rb-4.0.3&auto=format&fit=crop&w=2070&q=80" alt="Doctor" class="rounded-3xl shadow-xl w-full object-cover">
+                        <div class="absolute -bottom-10 -right-10 bg-teal-600 text-white p-6 rounded-2xl shadow-lg hidden md:block">
+                            <p class="text-sm font-bold opacity-80">院長</p>
+                            <p class="text-2xl font-bold">湊 健太朗</p>
+                            <p class="text-xs mt-1 font-eng">Kentaro Minato, M.D.</p>
+                        </div>
+                    </div>
+                </div>
+                <!-- テキスト -->
+                <div class="lg:w-1/2 fade-in-up" style="transition-delay: 200ms;">
+                    <h3 class="text-3xl font-bold text-slate-900 mb-6">
+                        心と体に、<br>
+                        まっすぐ向き合う医療を。
+                    </h3>
+                    <p class="text-slate-600 leading-loose mb-6">
+                        病気だけを見るのではなく、「人」を見る医療を大切にしています。<br>
+                        最新の医療知見に基づいた的確な診断はもちろん、不安な気持ちに寄り添い、丁寧な説明を心がけています。
+                    </p>
+                    <ul class="space-y-4 mb-8">
+                        <li class="flex items-center text-slate-700">
+                            <span class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 mr-3 text-xs">✓</span>
+                            <span>丁寧なカウンセリング</span>
+                        </li>
+                        <li class="flex items-center text-slate-700">
+                            <span class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 mr-3 text-xs">✓</span>
+                            <span>最新機器による精密検査</span>
+                        </li>
+                        <li class="flex items-center text-slate-700">
+                            <span class="w-6 h-6 bg-teal-100 rounded-full flex items-center justify-center text-teal-600 mr-3 text-xs">✓</span>
+                            <span>プライバシーへの配慮</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 診療時間・アクセス -->
+    <section id="schedule" class="py-24 bg-teal-50">
+        <div class="max-w-6xl mx-auto px-6">
+            <div class="grid lg:grid-cols-2 gap-12 bg-white rounded-3xl shadow-xl overflow-hidden fade-in-up">
+                
+                <!-- 左：時間割 -->
+                <div class="p-8 md:p-12">
+                    <h3 class="text-2xl font-bold mb-8 text-teal-800 flex items-center gap-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        診療時間
+                    </h3>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm text-slate-600 schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>診療時間</th>
+                                    <th>月</th>
+                                    <th>火</th>
+                                    <th>水</th>
+                                    <th>木</th>
+                                    <th>金</th>
+                                    <th class="text-blue-600 bg-blue-50">土</th>
+                                    <th class="text-red-600 bg-red-50">日</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td class="bg-gray-50 font-bold text-xs">10:00 - 13:00</td>
+                                    <td>●</td>
+                                    <td>●</td>
+                                    <td>●</td>
+                                    <td class="text-gray-300">/</td>
+                                    <td>●</td>
+                                    <td>▲</td>
+                                    <td class="text-gray-300">/</td>
+                                </tr>
+                                <tr>
+                                    <td class="bg-gray-50 font-bold text-xs">15:00 - 20:00</td>
+                                    <td>●</td>
+                                    <td>●</td>
+                                    <td>●</td>
+                                    <td class="text-gray-300">/</td>
+                                    <td>●</td>
+                                    <td class="text-gray-300">/</td>
+                                    <td class="text-gray-300">/</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="mt-4 text-xs text-gray-500 space-y-1">
+                        <p>▲ 土曜日は 9:00 - 14:00 までの診療となります。</p>
+                        <p>※ 木曜・日曜・祝日は休診日です。</p>
+                        <p>※ 最終受付は診療終了時間の30分前までとなります。</p>
+                    </div>
+                </div>
+
+                <!-- 右：アクセス -->
+                <div id="access" class="bg-slate-100 relative min-h-[300px]">
+                    <!-- Googleマップ埋め込み（画像プレースホルダー） -->
+                    <div class="absolute inset-0 grayscale opacity-80">
+                         <img src="https://images.unsplash.com/photo-1569336415962-a4bd9f69cd83?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80" alt="Map Location" class="w-full h-full object-cover">
+                    </div>
+                    <div class="absolute bottom-6 left-6 right-6 bg-white/90 backdrop-blur p-4 rounded-xl shadow-lg">
+                        <p class="font-bold text-slate-800 text-lg mb-1">Minato Medical Clinic</p>
+                        <p class="text-sm text-slate-600">〒107-0062 東京都港区南青山5-1-1<br>表参道駅 B3出口より徒歩3分</p>
+                        <a href="https://goo.gl/maps/xyz" target="_blank" class="block mt-3 text-center text-xs font-bold text-teal-600 border border-teal-600 rounded py-2 hover:bg-teal-50 transition">Google Mapで見る</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- フッター -->
+    <footer class="bg-teal-900 text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-6">
+            <div class="grid md:grid-cols-4 gap-12 border-b border-teal-800 pb-12 mb-8">
+                <div class="md:col-span-1">
+                    <h4 class="text-lg font-bold mb-4">Minato Medical Clinic</h4>
+                    <p class="text-teal-200 text-sm leading-relaxed">
+                        地域に根差した医療を。<br>
+                        いつでもお気軽にご相談ください。
+                    </p>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-sm text-teal-300">MENU</h4>
+                    <ul class="space-y-2 text-sm text-teal-100">
+                        <li><a href="#" class="hover:text-white transition">ホーム</a></li>
+                        <li><a href="#" class="hover:text-white transition">当院について</a></li>
+                        <li><a href="#" class="hover:text-white transition">診療内容</a></li>
+                        <li><a href="#" class="hover:text-white transition">よくあるご質問</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="font-bold mb-4 text-sm text-teal-300">CLINIC</h4>
+                    <ul class="space-y-2 text-sm text-teal-100">
+                        <li><a href="#" class="hover:text-white transition">お知らせ</a></li>
+                        <li><a href="#" class="hover:text-white transition">採用情報</a></li>
+                        <li><a href="#" class="hover:text-white transition">プライバシーポリシー</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <a href="#" class="block bg-white text-teal-800 font-bold text-center py-3 rounded hover:bg-teal-50 transition mb-4">
+                        WEB予約はこちら
+                    </a>
+                    <p class="text-center text-xl font-bold font-eng">03-1234-5678</p>
+                    <p class="text-center text-xs text-teal-400">受付時間 10:00-20:00</p>
+                </div>
+            </div>
+            <p class="text-center text-xs text-teal-400 font-eng">&copy; 2024 Minato Medical Clinic. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Script: Scroll Animations & Mobile Menu -->
+    <script>
+        // --- モバイルメニュー制御 ---
+        const menuBtn = document.getElementById('menu-btn');
+        const menuClose = document.getElementById('menu-close');
+        const mobileMenu = document.getElementById('mobile-menu');
+        const mobileLinks = document.querySelectorAll('.mobile-link');
+
+        function toggleMenu(show) {
+            if(show) {
+                mobileMenu.classList.remove('translate-y-full');
+            } else {
+                mobileMenu.classList.add('translate-y-full');
+            }
+        }
+
+        menuBtn.addEventListener('click', () => toggleMenu(true));
+        menuClose.addEventListener('click', () => toggleMenu(false));
+        
+        mobileLinks.forEach(link => {
+            link.addEventListener('click', () => toggleMenu(false));
+        });
+
+        // --- スクロールアニメーション (安全設計版) ---
+        // Intersection Observerを使って要素が見えたらクラスを追加
+        const observerOptions = {
+            root: null,
+            rootMargin: '0px',
+            threshold: 0.1 // 10%見えたら発火
+        };
+
+        const observer = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target); // 一度表示したら監視を終了（軽量化）
+                }
+            });
+        }, observerOptions);
+
+        // 監視対象をセット
+        document.querySelectorAll('.fade-in-up').forEach(el => {
+            observer.observe(el);
+        });
+
+        // 【安全装置
